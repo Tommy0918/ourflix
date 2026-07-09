@@ -75,7 +75,7 @@
             background-position: center;
         }
 
-        /* 建議更換成你們最美/最帥的單人照或合照網址 */
+        /* 這裡會自動套用你剛剛設定好的美麗圖片 */
         .avatar-her { background-image: url('https://picsum.photos/150/150?girl'); }
         .avatar-him { background-image: url('https://picsum.photos/150/150?boy'); }
 
@@ -157,7 +157,6 @@
         .banner {
             position: relative;
             height: 100vh;
-            /* 這裡建議更換成你們最浪漫、最有回憶的合照（如高山、大海或出國旅遊照） */
             background: linear-gradient(to right, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.2) 100%), 
                         url('https://picsum.photos/1920/1080?romantic') no-repeat center center/cover;
             display: flex;
@@ -212,7 +211,6 @@
             text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
         }
 
-        /* 按鈕樣式 */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -232,7 +230,6 @@
         .btn-info { background-color: rgba(109, 109, 110, 0.7); color: #fff; }
         .btn-info:hover { background-color: rgba(109, 109, 110, 0.4); }
 
-        /* 影片燈箱彈出視窗 */
         .video-modal {
             display: none;
             position: fixed;
@@ -257,6 +254,7 @@
 </head>
 <body>
 
+    <!-- 1. 選擇使用者介面 -->
     <div class="profile-gate" id="profileGate">
         <h1 class="profile-title">今天，想看哪一段故事？</h1>
         <ul class="profile-list">
@@ -271,10 +269,12 @@
         </ul>
     </div>
 
+    <!-- 2. Netflix 經典片頭動畫區塊 -->
     <div class="intro-animation" id="introAnimation">
         <div class="netflix-logo-n" id="netflixN">N</div>
     </div>
 
+    <!-- 3. 主頁面內容 -->
     <div class="main-content" id="mainContent">
         <nav class="navbar">
             <a href="#" class="logo">OURFLIX</a>
@@ -298,3 +298,127 @@
                 </p>
                 
                 <div>
+                    <button class="btn btn-play" onclick="openModal()">▶ 播放回憶錄</button>
+                    <button class="btn btn-info" onclick="showLoveMessage()">ⓘ 關於未來</button>
+                </div>
+            </div>
+        </header>
+    </div>
+
+    <!-- 影片彈出燈箱 -->
+    <div class="video-modal" id="videoModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <div class="video-container">
+                <iframe id="videoPlayer" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 加入 try-catch 防呆，避免音效被瀏覽器封鎖時導致整個點擊功能掛掉
+        function playTudumSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                
+                const ctx = new AudioContext();
+                
+                setTimeout(() => {
+                    createTone(ctx, 90, 0.1, 0.4); 
+                    createTone(ctx, 130, 0.1, 0.3); 
+                }, 0);
+
+                setTimeout(() => {
+                    createTone(ctx, 80, 0.15, 0.8); 
+                    createTone(ctx, 110, 0.15, 0.6); 
+                    createTone(ctx, 55, 0.2, 0.9); 
+                }, 150);
+            } catch (e) {
+                console.log("音效遭瀏覽器封鎖，已自動忽略並繼續播放動畫：", e);
+            }
+        }
+
+        function createTone(ctx, freq, attack, volume) {
+            try {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth'; 
+                osc.frequency.setValueAtTime(freq, ctx.currentTime);
+                
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(300, ctx.currentTime);
+
+                gain.gain.setValueAtTime(0, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + attack);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                
+                osc.start();
+                osc.stop(ctx.currentTime + 1.2);
+            } catch(err) {}
+        }
+
+        // 流程控制：確保不論如何，畫面一定會動
+        function selectUser(userName) {
+            // 立即執行淡出
+            document.getElementById('profileGate').style.opacity = '0';
+            
+            setTimeout(() => {
+                document.getElementById('profileGate').style.display = 'none';
+                
+                const intro = document.getElementById('introAnimation');
+                const netflixN = document.getElementById('netflixN');
+                
+                intro.style.display = 'flex';
+                netflixN.classList.add('animate-n');
+                
+                // 嘗試播放音效
+                playTudumSound();
+                
+                // 3.2 秒後淡出片頭
+                setTimeout(() => {
+                    intro.style.opacity = '0';
+                    setTimeout(() => {
+                        intro.style.display = 'none';
+                        const main = document.getElementById('mainContent');
+                        main.style.opacity = '1';
+                        document.body.style.overflow = 'auto'; 
+                    }, 500);
+                }, 3200);
+
+            }, 500);
+        }
+
+        // 影片燈箱控制
+        const modal = document.getElementById('videoModal');
+        const player = document.getElementById('videoPlayer');
+
+        function openModal() {
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+            if (player.tagName === 'IFRAME') {
+                const currentSrc = player.src;
+                player.src = currentSrc; 
+            } else if (player.tagName === 'VIDEO') {
+                player.pause();
+            }
+        }
+
+        function showLoveMessage() {
+            alert("「對我來說，這部影集的最佳女主角永遠只有妳。不管劇情怎麼發展，我都希望能一直陪妳連載下去。」");
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) { closeModal(); }
+        }
+    </script>
+</body>
+</html>
