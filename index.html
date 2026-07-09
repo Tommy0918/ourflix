@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ourflix - 專屬我們的回憶</title>
+    <title>Ourflix - 我們的未完待續</title>
     <style>
         * {
             box-sizing: border-box;
@@ -15,7 +15,26 @@
             background-color: #141414;
             color: #fff;
             font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            overflow: hidden; /* 初始鎖定滾動 */
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        /* 隱藏滾動條但保持滾動功能 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #141414;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #444;
         }
 
         /* ==================== 1. 選擇使用者介面 ==================== */
@@ -31,20 +50,29 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .profile-title {
-            font-size: 3.5rem;
+            font-size: 2.5rem;
             color: #fff;
             margin-bottom: 40px;
             font-weight: 500;
             letter-spacing: 2px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-title { font-size: 1.8rem; margin-bottom: 30px; }
+            .profile-list { gap: 25px !important; }
+            .avatar-box { width: 110px !important; height: 110px !important; }
+            .profile-name { font-size: 1rem !important; }
         }
 
         .profile-list {
             display: flex;
-            gap: 40px;
+            gap: 45px;
             list-style: none;
         }
 
@@ -58,176 +86,266 @@
 
         .avatar-box {
             position: relative;
-            width: 150px;
-            height: 150px;
-            border-radius: 4px;
+            width: 140px;
+            height: 140px;
+            border-radius: 6px;
             overflow: hidden;
             border: 4px solid transparent;
             transition: border-color 0.2s ease, transform 0.2s ease;
             background-size: cover;
             background-position: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        /* 這裡可以換成你們自己的大頭貼網址 */
-        .avatar-her { background-image: url('https://picsum.photos/150/150?girl'); }
-        .avatar-him { background-image: url('https://picsum.photos/150/150?boy'); }
+        .avatar-her { background-image: url('https://picsum.photos/150/150?forest'); }
+        .avatar-him { background-image: url('https://picsum.photos/150/150?ocean'); }
 
         .profile-item:hover .avatar-box {
             border-color: #fff;
-            transform: scale(1.05);
+            transform: scale(1.06);
         }
 
         .profile-name {
-            margin-top: 20px;
-            font-size: 1.3rem;
+            margin-top: 15px;
+            font-size: 1.1rem;
             color: rgba(255, 255, 255, 0.6);
             transition: color 0.2s ease;
+            letter-spacing: 1px;
         }
 
-        .profile-item:hover .profile-name {
-            color: #fff;
-        }
+        .profile-item:hover .profile-name { color: #fff; }
 
         /* ==================== 2. Netflix 經典片頭動畫 ==================== */
         .intro-animation {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-color: #000;
             z-index: 999;
-            justify-content: center;
-            align-items: center;
+            justify-content: center; align-items: center;
+            opacity: 1;
+            transition: opacity 0.6s ease;
         }
 
         .netflix-logo-n {
-            font-size: 12rem;
+            font-size: 14rem;
             color: #E50914;
             font-weight: 900;
-            font-family: 'Arial Black', Impact, sans-serif;
+            font-family: 'Impact', 'Arial Black', sans-serif;
             transform: scale(0.5);
             opacity: 0;
+            letter-spacing: -5px;
         }
 
-        /* 經典 N 字放大淡出動畫 */
-        @keyframes tudumEffect {
-            0% { transform: scale(0.6); opacity: 0; filter: blur(5px); }
-            20% { transform: scale(1); opacity: 1; filter: blur(0px); text-shadow: 0 0 20px rgba(229, 9, 20, 0.6); }
-            70% { transform: scale(1.1); opacity: 1; filter: blur(0px); }
-            100% { transform: scale(4); opacity: 0; filter: blur(10px); }
+        @keyframes tudumAnimation {
+            0% { transform: scale(0.55); opacity: 0; filter: blur(4px); }
+            15% { transform: scale(1); opacity: 1; filter: blur(0px); text-shadow: 0 0 30px rgba(229, 9, 20, 0.8), 0 0 50px rgba(229, 9, 20, 0.4); }
+            65% { transform: scale(1.05); opacity: 1; filter: blur(0px); text-shadow: 0 0 40px rgba(229, 9, 20, 0.8); }
+            100% { transform: scale(3.5); opacity: 0; filter: blur(15px); }
         }
 
         .animate-n {
-            animation: tudumEffect 3.5s forwards ease-in-out;
+            animation: tudumAnimation 3.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
         /* ==================== 3. 主頁面樣式 ==================== */
         .main-content {
             opacity: 0;
-            transition: opacity 1s ease;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: block;
+            width: 100%;
         }
 
         .navbar {
             position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 20px 4%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-            z-index: 10;
-            display: flex;
-            align-items: center;
+            top: 0; width: 100%; padding: 25px 4%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            z-index: 10; display: flex; align-items: center;
         }
 
         .logo {
-            color: #E50914;
-            font-size: 1.8rem;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-decoration: none;
+            color: #E50914; font-size: 1.8rem; font-weight: bold; letter-spacing: 1px; text-decoration: none;
         }
 
+        /* 主視覺大橫幅 */
         .banner {
             position: relative;
-            height: 85vh;
-            background: linear-gradient(to right, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0) 100%), 
-                        url('https://picsum.photos/1920/1080?romantic') no-repeat center center/cover;
+            height: 75vh;
+            background: linear-gradient(to right, rgba(0,0,0,0.9) 40%, rgba(0,0,0,0.3) 100%), 
+                        url('https://picsum.photos/1920/1080?mountain') no-repeat center center/cover;
             display: flex;
             align-items: center;
-            padding-left: 4%;
+            padding: 0 4%;
         }
 
-        .banner-content { max-width: 600px; z-index: 2; }
-        .banner-title { font-size: 3.5rem; font-weight: bold; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
-        .banner-info { margin-bottom: 20px; font-size: 1.1rem; }
-        .match-score { color: #46d369; font-weight: bold; margin-right: 15px; }
-        .banner-desc { font-size: 1.2rem; line-height: 1.4; margin-bottom: 30px; text-shadow: 1px 1px 2px rgba(0,0,0,0.6); }
+        .banner-content {
+            max-width: 700px;
+            z-index: 2;
+            margin-top: 60px;
+        }
 
+        .banner-title {
+            font-size: 3.2rem; font-weight: bold; margin-bottom: 15px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.7); letter-spacing: 1px;
+        }
+
+        .banner-info {
+            margin-bottom: 20px; font-size: 1rem; color: #cccccc;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 10px;
+        }
+
+        .match-score { color: #46d369; font-weight: bold; }
+        .badge { border: 1px solid rgba(255,255,255,0.4); padding: 2px 6px; font-size: 0.75rem; border-radius: 2px; }
+
+        .banner-desc {
+            font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px;
+            color: #e5e5e5; text-shadow: 1px 1px 3px rgba(0,0,0,0.9);
+        }
+
+        /* 按鈕 */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            padding: 12px 28px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-            transition: all 0.2s ease;
-            text-decoration: none;
+            display: inline-flex; align-items: center; padding: 12px 28px;
+            font-size: 1.1rem; font-weight: bold; border: none; border-radius: 4px;
+            cursor: pointer; margin-right: 12px; transition: all 0.2s ease; text-decoration: none;
         }
         .btn-play { background-color: #fff; color: #000; }
-        .btn-play:hover { background-color: rgba(255, 255, 255, 0.75); }
+        .btn-play:hover { background-color: rgba(255, 255, 255, 0.8); transform: scale(1.03); }
         .btn-info { background-color: rgba(109, 109, 110, 0.7); color: #fff; }
-        .btn-info:hover { background-color: rgba(109, 109, 110, 0.4); }
+        .btn-info:hover { background-color: rgba(109, 109, 110, 0.4); transform: scale(1.03); }
 
-        /* 影片燈箱彈出視窗 */
+        /* ==================== 4. 影片卡片行 (Movie Row) ==================== */
+        .movie-row-container {
+            padding: 40px 4% 80px 4%;
+            background-color: #141414;
+            position: relative;
+            z-index: 5;
+        }
+
+        .row-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            .movie-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 560px) {
+            .movie-grid { grid-template-columns: repeat(1, 1fr); }
+            .banner-title { font-size: 2.2rem; }
+            .banner-desc { font-size: 0.95rem; }
+        }
+
+        .movie-card {
+            background-color: #181818;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.04);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        /* 4部影片的預設海報圖，可自由替換網址 */
+        .img-ch1 { background-image: url('https://picsum.photos/400/250?scenery'); }
+        .img-ch2 { background-image: url('https://picsum.photos/400/250?nature'); }
+        .img-ch3 { background-image: url('https://picsum.photos/400/250?romantic'); }
+        .img-ch4 { background-image: url('https://picsum.photos/400/250?city'); }
+
+        .card-info-box {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .card-meta {
+            font-size: 0.85rem;
+            color: #46d369;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #b3b3b3;
+        }
+
+        /* 影片彈出燈箱 */
         .video-modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            z-index: 100;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1100;
             justify-content: center; align-items: center;
         }
 
         .modal-content {
             position: relative;
-            width: 80%; max-width: 900px; aspect-ratio: 16/9;
+            width: 85%; max-width: 950px; aspect-ratio: 16/9;
             background-color: #181818; border-radius: 8px; overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.6);
         }
 
-        .close-btn { position: absolute; top: 15px; right: 20px; color: white; font-size: 30px; cursor: pointer; z-index: 101; }
+        .close-btn { position: absolute; top: 15px; right: 20px; color: white; font-size: 35px; cursor: pointer; z-index: 1101; transition: color 0.2s;}
+        .close-btn:hover { color: #E50914; }
         .video-container { width: 100%; height: 100%; }
         .video-container iframe, .video-container video { width: 100%; height: 100%; border: none; }
     </style>
 </head>
 <body>
 
-    <!-- 1. 選擇使用者介面 -->
     <div class="profile-gate" id="profileGate">
-        <h1 class="profile-title">誰在觀看？</h1>
+        <h1 class="profile-title">今天，想看哪一段故事？</h1>
         <ul class="profile-list">
-            <!-- 女朋友的頭像，點擊觸發動畫 -->
-            <li class="profile-item" onclick="selectUser('寶貝')">
+            <li class="profile-item" onclick="startOurflixJourney('寶貝')">
                 <div class="avatar-box avatar-her"></div>
-                <div class="profile-name">我的專屬寶貝</div>
+                <div class="profile-name">執子之手</div>
             </li>
-            <!-- 你的頭像 -->
-            <li class="profile-item" onclick="selectUser('帥哥')">
+            <li class="profile-item" onclick="startOurflixJourney('男友')">
                 <div class="avatar-box avatar-him"></div>
-                <div class="profile-name">最貼心的男友</div>
+                <div class="profile-name">與子偕老</div>
             </li>
         </ul>
     </div>
 
-    <!-- 2. Netflix 經典片頭動畫區塊 -->
     <div class="intro-animation" id="introAnimation">
         <div class="netflix-logo-n" id="netflixN">N</div>
     </div>
 
-    <!-- 3. 主頁面內容 -->
     <div class="main-content" id="mainContent">
         <nav class="navbar">
             <a href="#" class="logo">OURFLIX</a>
@@ -235,137 +353,201 @@
 
         <header class="banner">
             <div class="banner-content">
-                <h1 class="banner-title" id="dynamicTitle">我們戀愛的無聊大小事</h1>
+                <h1 class="banner-title">致，不完美的我們</h1>
                 
                 <div class="banner-info">
-                    <span class="match-score">100% 適合度</span>
+                    <span class="match-score">100% 命定珍藏</span>
                     <span>2026</span>
-                    <span style="border: 1px solid rgba(255,255,255,0.4); padding: 0 4px; font-size: 0.8rem; margin-left: 10px;">18+ 閃光注意</span>
+                    <span class="badge">全系列完結篇？</span>
+                    <span class="badge" style="color: #ffc107; border-color: #ffc107; font-weight: bold;">精彩未完待續</span>
                 </div>
                 
                 <p class="banner-desc">
-                    這是一部記錄了兩個靈魂從相遇、相知到相守的浪漫巨作。
-                    充滿了無數次大笑、偶爾的拌嘴、以及走過高山與大海的足跡。今天，就讓我們一起重溫這段不可思議的旅程。
+                    我知道，我從來就不是一個完美的人。在遇見妳之前，我甚至不太確定自己是不是真的懂得如何去愛一個人、如何體貼、如何給予毫無保留的溫暖。
+                    <br><br>
+                    謝謝妳，用妳的包容與溫柔，教會了我什麼是愛，也讓我看見了自己的不足。如果可以，妳願意再給未來的我，一次繼續牽著妳寫下新篇章的機會嗎？
                 </p>
                 
                 <div>
-                    <button class="btn btn-play" onclick="openModal()">▶ 播放</button>
-                    <button class="btn btn-info" onclick="alert('我們預計還要再連載 100 年！')">ⓘ 更多資訊</button>
+                    <button class="btn btn-play" onclick="openModal(videoLinks.ch4)">▶ 播放最新預告</button>
+                    <button class="btn btn-info" onclick="showLoveMessage()">ⓘ 關於未來</button>
                 </div>
             </div>
         </header>
+
+        <section class="movie-row-container">
+            <h2 class="row-title">特別推薦：我們的未完待續</h2>
+            <div class="movie-grid">
+                
+                <div class="movie-card" onclick="openModal(videoLinks.ch1)">
+                    <div class="card-img-wrapper img-ch1"></div>
+                    <div class="card-info-box">
+                        <div>
+                            <div class="card-title">第一部：《初遇與那些無聊大小事》</div>
+                            <div class="card-meta">99% 適合度</div>
+                        </div>
+                        <div class="card-text">回顧最初手心出汗的心跳瞬間，和那些看似平凡卻最珍貴的無聊日常。</div>
+                    </div>
+                </div>
+
+                <div class="movie-card" onclick="openModal(videoLinks.ch2)">
+                    <div class="card-img-wrapper img-ch2"></div>
+                    <div class="card-info-box">
+                        <div>
+                            <div class="card-title">第二部：《走向大世界：高山與大海》</div>
+                            <div class="card-meta">100% 適合度</div>
+                        </div>
+                        <div class="card-text">那些年我們一同翻越的高山、一同潛入的大海，每一道風景都是愛的印記。</div>
+                    </div>
+                </div>
+
+                <div class="movie-card" onclick="openModal(videoLinks.ch3)">
+                    <div class="card-img-wrapper img-ch3"></div>
+                    <div class="card-info-box">
+                        <div>
+                            <div class="card-title">第三部：《謝謝妳，教會我如何愛人》</div>
+                            <div class="card-meta">最高情感推薦</div>
+                        </div>
+                        <div class="card-text">最真誠的自省與坦白。謝謝妳毫無保留的包容，陪伴我學會去愛與被愛。</div>
+                    </div>
+                </div>
+
+                <div class="movie-card" onclick="openModal(videoLinks.ch4)">
+                    <div class="card-img-wrapper img-ch4"></div>
+                    <div class="card-info-box">
+                        <div>
+                            <div class="card-title">第四部：《我們的 2.0 預告片》</div>
+                            <div class="card-meta">全新重磅回歸</div>
+                        </div>
+                        <div class="card-text">給未來的邀請函。這一次，換我用更成熟的姿態，去守護妳的笑容。</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </div>
 
-    <!-- 影片彈出燈箱 -->
     <div class="video-modal" id="videoModal">
         <div class="modal-content">
             <span class="close-btn" onclick="closeModal()">&times;</span>
             <div class="video-container">
-                <!-- 填入你的回憶錄影片網址 -->
-                <iframe id="videoPlayer" src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
     <script>
-        // 【音效設定】利用 Web Audio API 合成 Netflix 的經典「Tudum」雙低音爆發音效
-        function playTudumSound() {
-            if (typeof window.AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined') {
+        // ==================== 【影片網址設定區】 ====================
+        // 請把下方的網址替換成你實際做好的 4 部影片嵌入碼（Embed Link）
+        const videoLinks = {
+            ch1: "https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1", // 第一部影片網址
+            ch2: "https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1", // 第二部影片網址
+            ch3: "https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1", // 第三部影片網址
+            ch4: "https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1"  // 第四部影片網址
+        };
+
+        // Web Audio API 合成 Netflix 經典音效
+        function emitTudumSound() {
+            try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
-                const ctx = new AudioContext();
+                if (!AudioContext) return;
+                const audioCtx = new AudioContext();
                 
-                // 第一聲低音 (Tu...)
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
                 setTimeout(() => {
-                    createTone(ctx, 90, 0.1, 0.4); 
-                    createTone(ctx, 130, 0.1, 0.3); 
+                    synthesizeTone(audioCtx, 95, 0.08, 0.45); 
+                    synthesizeTone(audioCtx, 135, 0.08, 0.35); 
                 }, 0);
 
-                // 第二聲重低音，音量加大 (dum!!!)
                 setTimeout(() => {
-                    createTone(ctx, 80, 0.15, 0.8); 
-                    createTone(ctx, 110, 0.15, 0.6); 
-                    createTone(ctx, 55, 0.2, 0.9); // 極低音震撼感
-                }, 150);
+                    synthesizeTone(audioCtx, 82, 0.12, 0.85); 
+                    synthesizeTone(audioCtx, 112, 0.12, 0.65); 
+                    synthesizeTone(audioCtx, 52, 0.18, 0.95); 
+                }, 140);
+            } catch (error) {
+                console.log("音訊受限，自動改為靜音流暢轉場模式。");
             }
         }
 
-        function createTone(ctx, freq, attack, volume) {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.type = 'sawtooth'; // 鋸齒波比較有侵略感
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            
-            // 低通濾波器，讓聲音沉悶像電影院
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(300, ctx.currentTime);
+        function synthesizeTone(ctx, frequency, attackTime, targetVolume) {
+            try {
+                const oscillator = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+                const lowpassFilter = ctx.createBiquadFilter();
+                
+                oscillator.type = 'sawtooth'; 
+                oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
+                lowpassFilter.type = 'lowpass';
+                lowpassFilter.frequency.setValueAtTime(280, ctx.currentTime);
 
-            gain.gain.setValueAtTime(0, ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + attack);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
+                gainNode.gain.setValueAtTime(0, ctx.currentTime);
+                gainNode.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + attackTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.3);
 
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-            
-            osc.start();
-            osc.stop(ctx.currentTime + 1.2);
+                oscillator.connect(lowpassFilter);
+                lowpassFilter.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                
+                oscillator.start();
+                oscillator.stop(ctx.currentTime + 1.3);
+            } catch (e) {}
         }
 
-        // ==================== 流程控制 ====================
-        function selectUser(userName) {
-            // 1. 隱藏選擇使用者頁面
-            document.getElementById('profileGate').style.opacity = '0';
+        // ==================== 核心流程控制（Layout Reflow 技術修復） ====================
+        function startOurflixJourney(role) {
+            const gate = document.getElementById('profileGate');
+            const intro = document.getElementById('introAnimation');
+            const netflixN = document.getElementById('netflixN');
+            const main = document.getElementById('mainContent');
+
+            emitTudumSound();
+            gate.style.opacity = '0';
             
             setTimeout(() => {
-                document.getElementById('profileGate').style.display = 'none';
-                
-                // 2. 顯示並啟動片頭動畫
-                const intro = document.getElementById('introAnimation');
-                const netflixN = document.getElementById('netflixN');
+                gate.style.display = 'none';
                 intro.style.display = 'flex';
-                netflixN.classList.add('animate-n');
                 
-                // 播放音效
-                playTudumSound();
+                // 強迫瀏覽器重新計算佈局，確保動畫100%觸發
+                intro.offsetHeight; 
                 
-                // 3. 動播結束後滑入主頁面 (動畫長度約 3.5 秒)
                 setTimeout(() => {
-                    intro.style.opacity = '0';
+                    netflixN.classList.add('animate-n');
+                    
                     setTimeout(() => {
-                        intro.style.display = 'none';
-                        // 顯示主頁
-                        const main = document.getElementById('mainContent');
-                        main.style.opacity = '1';
-                        document.body.style.overflow = 'auto'; // 恢復滾動
-                    }, 500);
-                }, 3200);
-
-            }, 500);
+                        intro.style.opacity = '0';
+                        setTimeout(() => {
+                            intro.style.display = 'none';
+                            main.style.opacity = '1';
+                            document.body.style.overflow = 'auto'; // 開放滾動，可下滑看四部影片
+                        }, 600);
+                    }, 3000);
+                    
+                }, 30);
+            }, 600);
         }
 
-        // ==================== 影片燈箱控制 ====================
+        // 影片燈箱控制
         const modal = document.getElementById('videoModal');
         const player = document.getElementById('videoPlayer');
 
-        function openModal() {
+        function openModal(videoUrl) {
+            player.src = videoUrl;
             modal.style.display = 'flex';
         }
 
         function closeModal() {
             modal.style.display = 'none';
-            if (player.tagName === 'IFRAME') {
-                const currentSrc = player.src;
-                player.src = currentSrc; 
-            } else if (player.tagName === 'VIDEO') {
-                player.pause();
-            }
+            player.src = ""; // 清空網址停止播放
         }
 
-        window.onclick = function(event) {
-            if (event.target == modal) { closeModal(); }
+        function showLoveMessage() {
+            alert("「對我來說，這部影集的最佳女主角永遠只有妳。不管劇情怎麼發展，我都希望能一直陪妳連載下去。」");
         }
+
+        window.onclick = function(event) { if (event.target == modal) { closeModal(); } }
     </script>
 </body>
 </html>
