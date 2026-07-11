@@ -85,11 +85,23 @@
         .logo { color: #E50914; font-size: 1.8rem; font-weight: bold; letter-spacing: 1px; text-decoration: none; }
 
         .banner {
-            position: relative; height: 75vh;
-            background: linear-gradient(to right, rgba(0,0,0,0.9) 40%, rgba(0,0,0,0.3) 100%), 
-                        url('together-1.jpg') no-repeat center center/cover;
-            display: flex; align-items: center; padding: 0 4%;
-        }
+    position: relative;
+    height: 75vh;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(0,0,0,0.9) 40%,
+            rgba(0,0,0,0.3) 100%
+        ),
+        url('together-1.jpg') no-repeat center center;
+
+    background-size: 80%;   /* 可以改 70%、80%、90% 試試 */
+
+    display: flex;
+    align-items: center;
+    padding: 0 4%;
+}
 
         .banner-content { max-width: 700px; z-index: 2; margin-top: 60px; }
         .banner-title { font-size: 3.2rem; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.7); letter-spacing: 1px; }
