@@ -2,405 +2,1409 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Ourflix - 我們的未完待續</title>
+
     <style>
+        /* =========================
+           全域設定
+        ========================= */
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        html,
+        body {
+            width: 100%;
+            min-height: 100%;
+        }
+
         body {
             background-color: #141414;
-            color: #fff;
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #ffffff;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             overflow-x: hidden;
             overflow-y: auto;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: #141414; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #444; }
+        button {
+            font-family: inherit;
+        }
 
-        /* ==================== 1. 選擇使用者介面 ==================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #141414;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555555;
+        }
+
+
+        /* =========================
+           1. 選擇使用者頁面
+        ========================= */
+
         .profile-gate {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #141414; z-index: 1000; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            background-color: #141414;
+
+            transition:
+                opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .profile-title { font-size: 2.5rem; color: #fff; margin-bottom: 40px; font-weight: 500; letter-spacing: 2px; text-align: center; padding: 0 20px; }
+        .profile-title {
+            margin-bottom: 40px;
+            padding: 0 20px;
 
-        @media (max-width: 768px) {
-            .profile-title { font-size: 1.8rem; margin-bottom: 30px; }
-            .profile-list { gap: 25px !important; }
-            .avatar-box { width: 110px !important; height: 110px !important; }
-            .profile-name { font-size: 1rem !important; }
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-align: center;
         }
 
-        .profile-list { display: flex; gap: 45px; list-style: none; }
-        .profile-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; }
+        .profile-list {
+            display: flex;
+            gap: 45px;
+
+            list-style: none;
+        }
+
+        .profile-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            cursor: pointer;
+            text-decoration: none;
+        }
 
         .avatar-box {
-            position: relative; width: 140px; height: 140px; border-radius: 6px; overflow: hidden;
-            border: 4px solid transparent; transition: border-color 0.2s ease, transform 0.2s ease;
-            background-size: cover; background-position: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 140px;
+            height: 140px;
+
+            border: 4px solid transparent;
+            border-radius: 6px;
+
+            background-color: #222222;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+
+            overflow: hidden;
+
+            transition:
+                border-color 0.2s ease,
+                transform 0.2s ease;
         }
 
-        .avatar-her { background-image: url('Molly1.jpg'); }
-        .avatar-him { background-image: url('DoDo1.jpg'); }
+        /* 女生頭像 */
+        .avatar-her {
+            background-image: url("Molly1.jpg");
+        }
 
-        .profile-item:hover .avatar-box { border-color: #fff; transform: scale(1.06); }
-        .profile-name { margin-top: 15px; font-size: 1.1rem; color: rgba(255, 255, 255, 0.6); transition: color 0.2s ease; letter-spacing: 1px; }
-        .profile-item:hover .profile-name { color: #fff; }
+        /* 男生頭像 */
+        .avatar-him {
+            background-image: url("Tommy.jpg");
+        }
 
-        /* ==================== 2. Netflix 經典片頭動畫 ==================== */
+        .profile-name {
+            margin-top: 15px;
+
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+
+            transition: color 0.2s ease;
+        }
+
+        .profile-item:hover .avatar-box {
+            border-color: #ffffff;
+            transform: scale(1.06);
+        }
+
+        .profile-item:hover .profile-name {
+            color: #ffffff;
+        }
+
+
+        /* =========================
+           2. 開場動畫
+        ========================= */
+
         .intro-animation {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; z-index: 999; justify-content: center; align-items: center;
-            opacity: 1; transition: opacity 0.6s ease;
+            position: fixed;
+            inset: 0;
+            z-index: 999;
+
+            display: none;
+            justify-content: center;
+            align-items: center;
+
+            background-color: #000000;
+            opacity: 1;
+
+            transition: opacity 0.6s ease;
         }
 
         .netflix-logo-n {
-            font-size: 14rem; color: #E50914; font-weight: 900; font-family: 'Impact', 'Arial Black', sans-serif;
-            transform: scale(0.5); opacity: 0; letter-spacing: -5px;
+            color: #e50914;
+            font-family: Impact, "Arial Black", sans-serif;
+            font-size: 14rem;
+            font-weight: 900;
+            letter-spacing: -5px;
+
+            opacity: 0;
+            transform: scale(0.5);
         }
 
         @keyframes tudumAnimation {
-            0% { transform: scale(0.55); opacity: 0; filter: blur(4px); }
-            15% { transform: scale(1); opacity: 1; filter: blur(0px); text-shadow: 0 0 30px rgba(229, 9, 20, 0.8), 0 0 50px rgba(229, 9, 20, 0.4); }
-            65% { transform: scale(1.05); opacity: 1; filter: blur(0px); text-shadow: 0 0 40px rgba(229, 9, 20, 0.8); }
-            100% { transform: scale(3.5); opacity: 0; filter: blur(15px); }
+            0% {
+                opacity: 0;
+                filter: blur(4px);
+                transform: scale(0.55);
+            }
+
+            15% {
+                opacity: 1;
+                filter: blur(0);
+                transform: scale(1);
+
+                text-shadow:
+                    0 0 30px rgba(229, 9, 20, 0.8),
+                    0 0 50px rgba(229, 9, 20, 0.4);
+            }
+
+            65% {
+                opacity: 1;
+                filter: blur(0);
+                transform: scale(1.05);
+
+                text-shadow:
+                    0 0 40px rgba(229, 9, 20, 0.8);
+            }
+
+            100% {
+                opacity: 0;
+                filter: blur(15px);
+                transform: scale(3.5);
+            }
         }
 
-        .animate-n { animation: tudumAnimation 3.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .animate-n {
+            animation:
+                tudumAnimation 3.2s
+                cubic-bezier(0.25, 1, 0.5, 1)
+                forwards;
+        }
 
-        /* ==================== 3. 主頁面樣式 ==================== */
-        .main-content { opacity: 0; transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1); display: block; width: 100%; }
-        .navbar { position: fixed; top: 0; width: 100%; padding: 25px 4%; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%); z-index: 10; display: flex; align-items: center; }
-        .logo { color: #E50914; font-size: 1.8rem; font-weight: bold; letter-spacing: 1px; text-decoration: none; }
+
+        /* =========================
+           3. 主頁面
+        ========================= */
+
+        .main-content {
+            display: block;
+            width: 100%;
+
+            opacity: 0;
+
+            transition:
+                opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            z-index: 10;
+
+            display: flex;
+            align-items: center;
+
+            width: 100%;
+            padding: 20px 3.2%;
+
+            background:
+                linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.85) 0%,
+                    rgba(0, 0, 0, 0) 100%
+                );
+        }
+
+        .logo {
+            color: #e50914;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-decoration: none;
+        }
+
+
+        /* =========================
+           4. Banner 區域
+        ========================= */
 
         .banner {
-    position: relative;
-    height: 75vh;
+            position: relative;
 
-    background:
-        linear-gradient(
-            to right,
-            rgba(0,0,0,0.9) 40%,
-            rgba(0,0,0,0.3) 100%
-        ),
-        url('together-1.jpg') no-repeat center center;
+            display: flex;
+            align-items: center;
 
-    background-size: 80%;   /* 可以改 70%、80%、90% 試試 */
+            width: 100%;
+            height: 75vh;
+            min-height: 560px;
+            padding: 0 3.2%;
 
-    display: flex;
-    align-items: center;
-    padding: 0 4%;
-}
+            background-color: #000000;
 
-        .banner-content { max-width: 700px; z-index: 2; margin-top: 60px; }
-        .banner-title { font-size: 3.2rem; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.7); letter-spacing: 1px; }
-        .banner-info { margin-bottom: 20px; font-size: 1rem; color: #cccccc; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .match-score { color: #46d369; font-weight: bold; }
-        .badge { border: 1px solid rgba(255,255,255,0.4); padding: 2px 6px; font-size: 0.75rem; border-radius: 2px; }
-        .banner-desc { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: #e5e5e5; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
+            overflow: hidden;
+        }
 
-        .btn { display: inline-flex; align-items: center; padding: 12px 28px; font-size: 1.1rem; font-weight: bold; border: none; border-radius: 4px; cursor: pointer; margin-right: 12px; transition: all 0.2s ease; text-decoration: none; }
-        .btn-play { background-color: #fff; color: #000; }
-        .btn-play:hover { background-color: rgba(255, 255, 255, 0.8); transform: scale(1.03); }
-        .btn-info { background-color: rgba(109, 109, 110, 0.7); color: #fff; }
-        .btn-info:hover { background-color: rgba(109, 109, 110, 0.4); transform: scale(1.03); }
+        /*
+           Banner 圖片
 
-        /* ==================== 4. 影片卡片行 (Movie Row) ==================== */
-        .movie-row-container { padding: 40px 4% 80px 4%; background-color: #141414; position: relative; z-index: 5; }
-        .row-title { font-size: 1.6rem; font-weight: bold; margin-bottom: 20px; color: #fff; letter-spacing: 1px; text-align: center; }
+           contain = 完整顯示，不裁切，但可能有黑邊
+           cover   = 鋪滿畫面，但可能會裁切照片
 
-        /* 三欄置中排版 */
+           現在設定 contain，確保整張照片看得到。
+        */
+
+        .banner-image {
+            position: absolute;
+            inset: 0;
+
+            width: 100%;
+            height: 100%;
+
+            object-fit: contain;
+            object-position: center;
+
+            background-color: #000000;
+        }
+
+        /* Banner 黑色漸層 */
+
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+
+            background:
+                linear-gradient(
+                    to right,
+                    rgba(0, 0, 0, 0.92) 0%,
+                    rgba(0, 0, 0, 0.82) 30%,
+                    rgba(0, 0, 0, 0.35) 65%,
+                    rgba(0, 0, 0, 0.15) 100%
+                ),
+                linear-gradient(
+                    to top,
+                    #141414 0%,
+                    transparent 25%
+                );
+        }
+
+        .banner-content {
+            position: relative;
+            z-index: 2;
+
+            width: 100%;
+            max-width: 700px;
+            margin-top: 60px;
+        }
+
+        .banner-title {
+            margin-bottom: 15px;
+
+            font-size: 3.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+
+            text-shadow:
+                2px 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .banner-info {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            margin-bottom: 20px;
+
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        .match-score {
+            color: #46d369;
+            font-weight: bold;
+        }
+
+        .badge {
+            padding: 2px 6px;
+
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 2px;
+
+            font-size: 0.75rem;
+        }
+
+        .banner-desc {
+            margin-bottom: 25px;
+
+            color: #e5e5e5;
+            font-size: 1.1rem;
+            line-height: 1.65;
+
+            text-shadow:
+                1px 1px 3px rgba(0, 0, 0, 0.95);
+        }
+
+        .btn {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+
+            margin-right: 12px;
+            margin-bottom: 10px;
+            padding: 12px 28px;
+
+            border: none;
+            border-radius: 4px;
+
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+
+            cursor: pointer;
+
+            transition:
+                background-color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .btn-play {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        .btn-play:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            transform: scale(1.03);
+        }
+
+        .btn-info {
+            background-color: rgba(109, 109, 110, 0.75);
+            color: #ffffff;
+        }
+
+        .btn-info:hover {
+            background-color: rgba(109, 109, 110, 0.45);
+            transform: scale(1.03);
+        }
+
+
+        /* =========================
+           5. 三部曲卡片
+        ========================= */
+
+        .movie-row-container {
+            position: relative;
+            z-index: 5;
+
+            padding: 35px 4% 80px;
+
+            background-color: #141414;
+        }
+
+        .row-title {
+            margin-bottom: 22px;
+
+            color: #ffffff;
+            font-size: 1.6rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-align: center;
+        }
+
         .movie-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 25px;
+
+            width: 100%;
             max-width: 1100px;
             margin: 0 auto;
         }
 
-        @media (max-width: 900px) { .movie-grid { grid-template-columns: repeat(1, 1fr); max-width: 450px; } }
+        .movie-card {
+            display: flex;
+            flex-direction: column;
 
-        .movie-card { background-color: #181818; border-radius: 6px; overflow: hidden; cursor: pointer; position: relative; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; }
-        .movie-card:hover { transform: scale(1.04); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+            min-width: 0;
 
-        .card-img-wrapper { width: 100%; aspect-ratio: 16/10; background-size: cover; background-position: center; position: relative; }
-        .img-ch1 { background-image: url('together-2.jpg'); }
-        .img-ch2 { background-image: url('selfell.jpg'); }
-        .img-ch3 { background-image: url('together_like2.jpg'); }
+            background-color: #181818;
+            border-radius: 6px;
 
-        .card-info-box { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
-        .card-title { font-size: 1.15rem; font-weight: bold; margin-bottom: 8px; color: #fff; }
-        .card-meta { font-size: 0.85rem; color: #46d369; font-weight: bold; margin-bottom: 8px; }
-        .card-text { font-size: 0.9rem; line-height: 1.4; color: #b3b3b3; }
+            box-shadow:
+                0 4px 10px rgba(0, 0, 0, 0.3);
 
-        /* ==================== 5. 燈箱彈出視窗設計 ==================== */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.95); z-index: 1100; justify-content: center; align-items: center; }
-        
-        /* 影片播放器專用 */
-        .modal-video-content { position: relative; width: 85%; max-width: 950px; aspect-ratio: 16/9; background-color: #000; border-radius: 8px; overflow: hidden; box-shadow: 0 0 40px rgba(0,0,0,0.6); }
-        .video-container { width: 100%; height: 100%; }
-        .video-container iframe { width: 100%; height: 100%; border: none; }
+            cursor: pointer;
+            overflow: hidden;
 
-        /* 選擇權對話框專用 */
-        .modal-choice-content {
-            position: relative; width: 90%; max-width: 500px; background-color: #181818; 
-            border-radius: 12px; padding: 50px 30px; text-align: center;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            border: 1px solid #333;
+            transition:
+                transform 0.3s cubic-bezier(0.25, 1, 0.5, 1),
+                box-shadow 0.3s ease;
         }
-        .modal-choice-content h2 { font-size: 1.8rem; margin-bottom: 20px; color: #fff; }
-        .modal-choice-content p { font-size: 1.1rem; line-height: 1.6; color: #ccc; margin-bottom: 40px; }
-        
-        .choice-buttons { display: flex; flex-direction: column; gap: 15px; }
-        .choice-btn { padding: 15px; font-size: 1.1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; border: none; }
-        .btn-yes { background-color: #E50914; color: white; }
-        .btn-yes:hover { background-color: #f40612; transform: scale(1.02); }
-        .btn-wait { background-color: transparent; color: #aaa; border: 1px solid #555; }
-        .btn-wait:hover { border-color: #fff; color: #fff; }
 
-        .close-btn { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 35px; cursor: pointer; z-index: 1101; transition: color 0.2s;}
-        .close-btn:hover { color: #fff; }
+        .movie-card:hover {
+            transform: scale(1.04);
+
+            box-shadow:
+                0 10px 25px rgba(0, 0, 0, 0.55);
+        }
+
+        /*
+           重要修改：
+
+           object-fit: contain;
+           代表整張照片完整顯示，不會被上下左右裁切。
+        */
+
+        .card-image {
+            display: block;
+
+            width: 100%;
+            aspect-ratio: 16 / 10;
+
+            background-color: #0b0b0b;
+
+            object-fit: contain;
+            object-position: center;
+        }
+
+        .card-info-box {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+
+            min-height: 130px;
+            padding: 15px;
+        }
+
+        .card-title {
+            margin-bottom: 8px;
+
+            color: #ffffff;
+            font-size: 1.15rem;
+            font-weight: bold;
+            line-height: 1.4;
+        }
+
+        .card-meta {
+            margin-bottom: 12px;
+
+            color: #46d369;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .card-text {
+            color: #b3b3b3;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           6. 彈出視窗
+        ========================= */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1100;
+
+            display: none;
+            justify-content: center;
+            align-items: center;
+
+            padding: 20px;
+
+            background-color: rgba(0, 0, 0, 0.95);
+        }
+
+        .modal-video-content {
+            position: relative;
+
+            width: 85%;
+            max-width: 950px;
+            aspect-ratio: 16 / 9;
+
+            background-color: #000000;
+            border-radius: 8px;
+
+            box-shadow:
+                0 0 40px rgba(0, 0, 0, 0.6);
+
+            overflow: hidden;
+        }
+
+        .video-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+
+            border: none;
+        }
+
+        .modal-choice-content {
+            position: relative;
+
+            width: 90%;
+            max-width: 500px;
+            padding: 50px 30px;
+
+            background-color: #181818;
+            border: 1px solid #333333;
+            border-radius: 12px;
+
+            box-shadow:
+                0 0 40px rgba(0, 0, 0, 0.8);
+
+            text-align: center;
+        }
+
+        .modal-choice-content h2 {
+            margin-bottom: 20px;
+
+            color: #ffffff;
+            font-size: 1.8rem;
+        }
+
+        .modal-choice-content p {
+            margin-bottom: 40px;
+
+            color: #cccccc;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .choice-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .choice-btn {
+            padding: 15px;
+
+            border: none;
+            border-radius: 6px;
+
+            font-size: 1.1rem;
+            font-weight: bold;
+
+            cursor: pointer;
+
+            transition:
+                border-color 0.2s ease,
+                color 0.2s ease,
+                background-color 0.2s ease,
+                transform 0.2s ease;
+        }
+
+        .btn-yes {
+            background-color: #e50914;
+            color: #ffffff;
+        }
+
+        .btn-yes:hover {
+            background-color: #f40612;
+            transform: scale(1.02);
+        }
+
+        .btn-wait {
+            background-color: transparent;
+            border: 1px solid #555555;
+            color: #aaaaaa;
+        }
+
+        .btn-wait:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 18px;
+            z-index: 1101;
+
+            color: #aaaaaa;
+            font-size: 35px;
+
+            cursor: pointer;
+
+            transition: color 0.2s ease;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+
+        /* =========================
+           7. 平板、手機版
+        ========================= */
+
+        @media (max-width: 900px) {
+            .movie-grid {
+                grid-template-columns: 1fr;
+
+                max-width: 520px;
+            }
+
+            .card-image {
+                aspect-ratio: 16 / 10;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .profile-title {
+                margin-bottom: 30px;
+
+                font-size: 1.8rem;
+            }
+
+            .profile-list {
+                gap: 22px;
+            }
+
+            .avatar-box {
+                width: 110px;
+                height: 110px;
+            }
+
+            .profile-name {
+                font-size: 1rem;
+            }
+
+            .netflix-logo-n {
+                font-size: 9rem;
+            }
+
+            .navbar {
+                padding: 18px 5%;
+            }
+
+            .logo {
+                font-size: 1.45rem;
+            }
+
+            .banner {
+                align-items: flex-end;
+
+                height: 82vh;
+                min-height: 650px;
+                padding: 0 5% 45px;
+            }
+
+            /*
+               手機版如果 contain 黑邊太多，
+               可以把 contain 改成 cover。
+            */
+
+            .banner-image {
+                object-fit: cover;
+                object-position: center;
+            }
+
+            .banner-overlay {
+                background:
+                    linear-gradient(
+                        to top,
+                        rgba(0, 0, 0, 0.98) 0%,
+                        rgba(0, 0, 0, 0.75) 45%,
+                        rgba(0, 0, 0, 0.15) 100%
+                    );
+            }
+
+            .banner-content {
+                margin-top: 0;
+            }
+
+            .banner-title {
+                font-size: 2.25rem;
+            }
+
+            .banner-desc {
+                font-size: 0.98rem;
+                line-height: 1.55;
+            }
+
+            .btn {
+                padding: 11px 18px;
+
+                font-size: 0.95rem;
+            }
+
+            .movie-row-container {
+                padding-right: 5%;
+                padding-left: 5%;
+            }
+
+            .row-title {
+                font-size: 1.35rem;
+            }
+
+            .modal-video-content {
+                width: 100%;
+            }
+        }
     </style>
 </head>
+
 <body>
 
+    <!-- 選擇使用者 -->
     <div class="profile-gate" id="profileGate">
-        <h1 class="profile-title">今天，想看哪一段故事？</h1>
+
+        <h1 class="profile-title">
+            今天，想看哪一段故事？
+        </h1>
+
         <ul class="profile-list">
-            <li class="profile-item" onclick="startOurflixJourney('寶貝')">
+
+            <li
+                class="profile-item"
+                onclick="startOurflixJourney('寶貝')"
+            >
                 <div class="avatar-box avatar-her"></div>
                 <div class="profile-name">Molly</div>
             </li>
-            <li class="profile-item" onclick="startOurflixJourney('男友')">
+
+            <li
+                class="profile-item"
+                onclick="startOurflixJourney('男友')"
+            >
                 <div class="avatar-box avatar-him"></div>
                 <div class="profile-name">Tommy</div>
             </li>
+
         </ul>
     </div>
 
+
+    <!-- 開場動畫 -->
     <div class="intro-animation" id="introAnimation">
-        <div class="netflix-logo-n" id="netflixN">N</div>
+
+        <div
+            class="netflix-logo-n"
+            id="netflixN"
+        >
+            N
+        </div>
+
     </div>
 
-    <div class="main-content" id="mainContent">
-        <nav class="navbar"><a href="#" class="logo">OURFLIX</a></nav>
 
+    <!-- 主頁面 -->
+    <div class="main-content" id="mainContent">
+
+        <nav class="navbar">
+            <a href="#" class="logo">
+                OURFLIX
+            </a>
+        </nav>
+
+
+        <!-- Banner -->
         <header class="banner">
+
+            <!-- 修改 Banner 照片檔名 -->
+            <img
+                class="banner-image"
+                src="together-1.jpg"
+                alt="我們的回憶"
+            >
+
+            <div class="banner-overlay"></div>
+
             <div class="banner-content">
-                <h1 class="banner-title">致，不完美的我們</h1>
+
+                <h1 class="banner-title">
+                    致，不完美的我們
+                </h1>
+
                 <div class="banner-info">
-                    <span class="match-score">100% 命定珍藏</span>
+
+                    <span class="match-score">
+                        100% 命定珍藏
+                    </span>
+
                     <span>2026</span>
-                    <span class="badge">最終章？</span>
+
+                    <span class="badge">
+                        最終章？
+                    </span>
+
                 </div>
+
                 <p class="banner-desc">
-                    我知道，我從來就不是一個完美的人。在遇見妳之前，我甚至不太確定自己是不是真的懂得如何去愛一個人、如何體貼、如何給予毫無保留的溫暖。<br><br>
-                    謝謝妳，用妳的包容與溫柔，教會了我什麼是愛，也讓我看見了自己的不足。
+                    我知道，我從來就不是一個完美的人。在遇見妳之前，
+                    我甚至不太確定自己是不是真的懂得如何去愛一個人、
+                    如何體貼、如何給予毫無保留的溫暖。
+                    <br><br>
+                    謝謝妳，用妳的包容與溫柔，教會了我什麼是愛，
+                    也讓我看見了自己的不足。
                 </p>
+
                 <div>
-                    <button class="btn btn-play" onclick="openVideoModal(videoLinks.ch1)">▶ 播放我們的回憶</button>
-                    <button class="btn btn-info" onclick="openChoiceModal()">ⓘ 關於未來</button>
+
+                    <button
+                        class="btn btn-play"
+                        onclick="openVideoModal(videoLinks.ch1)"
+                    >
+                        ▶ 播放我們的回憶
+                    </button>
+
+                    <button
+                        class="btn btn-info"
+                        onclick="openChoiceModal()"
+                    >
+                        ⓘ 關於未來
+                    </button>
+
                 </div>
+
             </div>
+
         </header>
 
+
+        <!-- 三部曲 -->
         <section class="movie-row-container">
-            <h2 class="row-title">獨家放映：三部曲</h2>
+
+            <h2 class="row-title">
+                獨家放映：三部曲
+            </h2>
+
             <div class="movie-grid">
-                
-                <!-- 第一部：回憶影片 (YouTube) -->
-                <div class="movie-card" onclick="openVideoModal(videoLinks.ch1)">
-                    <div class="card-img-wrapper img-ch1"></div>
+
+
+                <!-- 第一部 -->
+                <div
+                    class="movie-card"
+                    onclick="openVideoModal(videoLinks.ch1)"
+                >
+
+                    <!-- 修改第一部照片檔名 -->
+                    <img
+                        class="card-image"
+                        src="together.jpg"
+                        alt="那些最珍貴的瞬間"
+                    >
+
                     <div class="card-info-box">
+
                         <div>
-                            <div class="card-title">第一部：《那些最珍貴的瞬間》</div>
-                            <div class="card-meta">99% 適合度</div>
+
+                            <div class="card-title">
+                                第一部：《那些最珍貴的瞬間》
+                            </div>
+
+                            <div class="card-meta">
+                                99% 適合度
+                            </div>
+
                         </div>
-                        <div class="card-text">點點滴滴的回憶，是我心裡最不願放手的寶藏。</div>
+
+                        <div class="card-text">
+                            點點滴滴的回憶，是我心裡最不願放手的寶藏。
+                        </div>
+
                     </div>
+
                 </div>
 
-                <!-- 第二部：道歉錄音 (Google Drive) -->
-                <div class="movie-card" onclick="openVideoModal(videoLinks.ch2)">
-                    <div class="card-img-wrapper img-ch2"></div>
+
+                <!-- 第二部 -->
+                <div
+                    class="movie-card"
+                    onclick="openVideoModal(videoLinks.ch2)"
+                >
+
+                    <!-- 修改第二部照片檔名 -->
+                    <img
+                        class="card-image"
+                        src="DoDo1.jpg"
+                        alt="我的心裡話"
+                    >
+
                     <div class="card-info-box">
+
                         <div>
-                            <div class="card-title">第二部：《我的心裡話》</div>
-                            <div class="card-meta">最高情感推薦</div>
+
+                            <div class="card-title">
+                                第二部：《我的心裡話》
+                            </div>
+
+                            <div class="card-meta">
+                                最高情感推薦
+                            </div>
+
                         </div>
-                        <div class="card-text">對不起。有些話，我想親口對妳說，請聽聽我的聲音。</div>
+
+                        <div class="card-text">
+                            對不起。有些話，我想親口對妳說，請聽聽我的聲音。
+                        </div>
+
                     </div>
+
                 </div>
 
-                <!-- 第三部：選擇權 (對話框) -->
-                <div class="movie-card" onclick="openChoiceModal()">
-                    <div class="card-img-wrapper img-ch3"></div>
+
+                <!-- 第三部 -->
+                <div
+                    class="movie-card"
+                    onclick="openChoiceModal()"
+                >
+
+                    <!-- 修改第三部照片檔名 -->
+                    <img
+                        class="card-image"
+                        src="together-2.jpg"
+                        alt="未來的選擇權"
+                    >
+
                     <div class="card-info-box">
+
                         <div>
-                            <div class="card-title">第三部：《未來的選擇權》</div>
-                            <div class="card-meta">最終決定</div>
+
+                            <div class="card-title">
+                                第三部：《未來的選擇權》
+                            </div>
+
+                            <div class="card-meta">
+                                最終決定
+                            </div>
+
                         </div>
-                        <div class="card-text">這部專屬於我們的影集會不會有下一季？把決定權交給妳。</div>
+
+                        <div class="card-text">
+                            這部專屬於我們的影集會不會有下一季？
+                            把決定權交給妳。
+                        </div>
+
                     </div>
+
                 </div>
 
             </div>
+
         </section>
+
     </div>
 
-    <!-- 影片專用燈箱 -->
+
+    <!-- 影片彈出視窗 -->
     <div class="modal-overlay" id="videoModal">
+
         <div class="modal-video-content">
-            <span class="close-btn" onclick="closeAllModals()">&times;</span>
+
+            <span
+                class="close-btn"
+                onclick="closeAllModals()"
+            >
+                &times;
+            </span>
+
             <div class="video-container">
-                <iframe id="videoPlayer" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+                <iframe
+                    id="videoPlayer"
+                    src=""
+                    allow="autoplay; encrypted-media"
+                    allowfullscreen
+                ></iframe>
+
             </div>
+
         </div>
+
     </div>
 
-    <!-- 選擇權對話框 (第三部專屬) -->
+
+    <!-- 第三部選擇視窗 -->
     <div class="modal-overlay" id="choiceModal">
+
         <div class="modal-choice-content">
-            <span class="close-btn" onclick="closeAllModals()">&times;</span>
-            <h2>未完，待續？</h2>
+
+            <span
+                class="close-btn"
+                onclick="closeAllModals()"
+            >
+                &times;
+            </span>
+
+            <h2>
+                未完，待續？
+            </h2>
+
             <p id="choiceText">
-                這段時間我深刻地反省了自己。<br><br>
-                妳願意再給未來的我一次機會，<br>讓我用行動證明，我能成為更好、更值得妳依賴的人嗎？
+                這段時間我深刻地反省了自己。
+                <br><br>
+                妳願意再給未來的我一次機會，
+                <br>
+                讓我用行動證明，我能成為更好、
+                更值得妳依賴的人嗎？
             </p>
-            <div class="choice-buttons" id="choiceButtons">
-                <button class="choice-btn btn-yes" onclick="answerYes()">我願意給未來的你一次機會</button>
-                <button class="choice-btn btn-wait" onclick="answerWait()">我還需要一點時間</button>
+
+            <div
+                class="choice-buttons"
+                id="choiceButtons"
+            >
+
+                <button
+                    class="choice-btn btn-yes"
+                    onclick="answerYes()"
+                >
+                    我願意給未來的你一次機會
+                </button>
+
+                <button
+                    class="choice-btn btn-wait"
+                    onclick="answerWait()"
+                >
+                    我還需要一點時間
+                </button>
+
             </div>
+
         </div>
+
     </div>
+
 
     <script>
-        // ==================== 【影片網址設定區】 ====================
+        /* =========================
+           影片網址
+        ========================= */
+
         const videoLinks = {
-            // 第一部：YouTube 回憶影片
-            ch1: "https://drive.google.com/file/d/1sMIx5EaOAzIoA-K519Omwy7b_lbLzk21/preview", 
-            
-            // 第二部：Google Drive 道歉錄音影片
-            ch2: "https://drive.google.com/file/d/1or3n2EED6v6D0YfPpwr9vq9TovVQhIq0/preview"
-            
+            ch1:
+                "https://drive.google.com/file/d/1sMIx5EaOAzIoA-K519Omwy7b_lbLzk21/preview",
+
+            ch2:
+                "https://drive.google.com/file/d/1or3n2EED6v6D0YfPpwr9vq9TovVQhIq0/preview"
         };
 
-        // Web Audio API 合成 Netflix 經典音效
+
+        /* =========================
+           開場音效
+        ========================= */
+
         function emitTudumSound() {
             try {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (!AudioContext) return;
+                const AudioContext =
+                    window.AudioContext ||
+                    window.webkitAudioContext;
+
+                if (!AudioContext) {
+                    return;
+                }
+
                 const audioCtx = new AudioContext();
-                if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+                if (audioCtx.state === "suspended") {
+                    audioCtx.resume();
+                }
 
                 setTimeout(() => {
-                    synthesizeTone(audioCtx, 95, 0.08, 0.45); 
-                    synthesizeTone(audioCtx, 135, 0.08, 0.35); 
+                    synthesizeTone(
+                        audioCtx,
+                        95,
+                        0.08,
+                        0.45
+                    );
+
+                    synthesizeTone(
+                        audioCtx,
+                        135,
+                        0.08,
+                        0.35
+                    );
                 }, 0);
+
                 setTimeout(() => {
-                    synthesizeTone(audioCtx, 82, 0.12, 0.85); 
-                    synthesizeTone(audioCtx, 112, 0.12, 0.65); 
-                    synthesizeTone(audioCtx, 52, 0.18, 0.95); 
+                    synthesizeTone(
+                        audioCtx,
+                        82,
+                        0.12,
+                        0.85
+                    );
+
+                    synthesizeTone(
+                        audioCtx,
+                        112,
+                        0.12,
+                        0.65
+                    );
+
+                    synthesizeTone(
+                        audioCtx,
+                        52,
+                        0.18,
+                        0.95
+                    );
                 }, 140);
-            } catch (error) {}
+
+            } catch (error) {
+                console.log("音效播放失敗：", error);
+            }
         }
 
-        function synthesizeTone(ctx, frequency, attackTime, targetVolume) {
-            try {
-                const oscillator = ctx.createOscillator();
-                const gainNode = ctx.createGain();
-                const lowpassFilter = ctx.createBiquadFilter();
-                oscillator.type = 'sawtooth'; 
-                oscillator.frequency.setValueAtTime(frequency, ctx.currentTime);
-                lowpassFilter.type = 'lowpass';
-                lowpassFilter.frequency.setValueAtTime(280, ctx.currentTime);
 
-                gainNode.gain.setValueAtTime(0, ctx.currentTime);
-                gainNode.gain.linearRampToValueAtTime(targetVolume, ctx.currentTime + attackTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.3);
+        function synthesizeTone(
+            ctx,
+            frequency,
+            attackTime,
+            targetVolume
+        ) {
+            try {
+                const oscillator =
+                    ctx.createOscillator();
+
+                const gainNode =
+                    ctx.createGain();
+
+                const lowpassFilter =
+                    ctx.createBiquadFilter();
+
+                oscillator.type = "sawtooth";
+
+                oscillator.frequency.setValueAtTime(
+                    frequency,
+                    ctx.currentTime
+                );
+
+                lowpassFilter.type = "lowpass";
+
+                lowpassFilter.frequency.setValueAtTime(
+                    280,
+                    ctx.currentTime
+                );
+
+                gainNode.gain.setValueAtTime(
+                    0,
+                    ctx.currentTime
+                );
+
+                gainNode.gain.linearRampToValueAtTime(
+                    targetVolume,
+                    ctx.currentTime + attackTime
+                );
+
+                gainNode.gain.exponentialRampToValueAtTime(
+                    0.001,
+                    ctx.currentTime + 1.3
+                );
 
                 oscillator.connect(lowpassFilter);
                 lowpassFilter.connect(gainNode);
                 gainNode.connect(ctx.destination);
-                oscillator.start(); oscillator.stop(ctx.currentTime + 1.3);
-            } catch (e) {}
+
+                oscillator.start();
+
+                oscillator.stop(
+                    ctx.currentTime + 1.3
+                );
+
+            } catch (error) {
+                console.log(error);
+            }
         }
 
-        // 核心流程控制
+
+        /* =========================
+           選擇使用者後進入頁面
+        ========================= */
+
         function startOurflixJourney(role) {
-            const gate = document.getElementById('profileGate');
-            const intro = document.getElementById('introAnimation');
-            const netflixN = document.getElementById('netflixN');
-            const main = document.getElementById('mainContent');
+            const gate =
+                document.getElementById("profileGate");
+
+            const intro =
+                document.getElementById("introAnimation");
+
+            const netflixN =
+                document.getElementById("netflixN");
+
+            const main =
+                document.getElementById("mainContent");
 
             emitTudumSound();
-            gate.style.opacity = '0';
-            
+
+            gate.style.opacity = "0";
+
             setTimeout(() => {
-                gate.style.display = 'none';
-                intro.style.display = 'flex';
-                intro.offsetHeight; // 強制佈局刷新
-                
+                gate.style.display = "none";
+
+                intro.style.display = "flex";
+
+                intro.offsetHeight;
+
                 setTimeout(() => {
-                    netflixN.classList.add('animate-n');
+                    netflixN.classList.add("animate-n");
+
                     setTimeout(() => {
-                        intro.style.opacity = '0';
+                        intro.style.opacity = "0";
+
                         setTimeout(() => {
-                            intro.style.display = 'none';
-                            main.style.opacity = '1';
-                            document.body.style.overflow = 'auto';
+                            intro.style.display = "none";
+                            main.style.opacity = "1";
+                            document.body.style.overflow = "auto";
                         }, 600);
+
                     }, 3000);
+
                 }, 30);
+
             }, 600);
         }
 
-        // 彈出視窗控制
-        const vModal = document.getElementById('videoModal');
-        const cModal = document.getElementById('choiceModal');
-        const player = document.getElementById('videoPlayer');
+
+        /* =========================
+           彈出視窗控制
+        ========================= */
+
+        const videoModal =
+            document.getElementById("videoModal");
+
+        const choiceModal =
+            document.getElementById("choiceModal");
+
+        const player =
+            document.getElementById("videoPlayer");
+
 
         function openVideoModal(videoUrl) {
             player.src = videoUrl;
-            vModal.style.display = 'flex';
+            videoModal.style.display = "flex";
+            document.body.style.overflow = "hidden";
         }
+
 
         function openChoiceModal() {
-            cModal.style.display = 'flex';
+            choiceModal.style.display = "flex";
+            document.body.style.overflow = "hidden";
         }
+
 
         function closeAllModals() {
-            vModal.style.display = 'none';
-            cModal.style.display = 'none';
-            player.src = ""; // 停止影片聲音
+            videoModal.style.display = "none";
+            choiceModal.style.display = "none";
+
+            player.src = "";
+
+            document.body.style.overflow = "auto";
         }
 
-        // 第三部：選擇權的回饋互動
+
+        /* =========================
+           第三部按鈕回應
+        ========================= */
+
         function answerYes() {
-            document.getElementById('choiceText').innerHTML = "謝謝妳。<br>我絕對不會辜負妳給我的這次機會，<br>未來的劇本，我們一起好好寫下去。";
-            document.getElementById('choiceButtons').style.display = "none";
+            document.getElementById(
+                "choiceText"
+            ).innerHTML =
+                "謝謝妳。<br><br>" +
+                "我絕對不會辜負妳給我的這次機會，<br>" +
+                "未來的劇本，我們一起好好寫下去。";
+
+            document.getElementById(
+                "choiceButtons"
+            ).style.display = "none";
         }
+
 
         function answerWait() {
-            document.getElementById('choiceText').innerHTML = "沒關係，我明白的。<br>我會在這裡一直等妳，<br>直到妳的心準備好再次為我打開。";
-            document.getElementById('choiceButtons').style.display = "none";
+            document.getElementById(
+                "choiceText"
+            ).innerHTML =
+                "沒關係，我明白的。<br><br>" +
+                "我會尊重妳需要的時間與空間，<br>" +
+                "也會好好把自己照顧好、變得更成熟。";
+
+            document.getElementById(
+                "choiceButtons"
+            ).style.display = "none";
         }
 
-        // 點擊背景關閉
-        window.onclick = function(event) { 
-            if (event.target == vModal || event.target == cModal) { closeAllModals(); } 
-        }
+
+        /* 點擊黑色背景關閉視窗 */
+
+        window.addEventListener(
+            "click",
+            function (event) {
+                if (
+                    event.target === videoModal ||
+                    event.target === choiceModal
+                ) {
+                    closeAllModals();
+                }
+            }
+        );
+
+
+        /* 按 Esc 關閉視窗 */
+
+        window.addEventListener(
+            "keydown",
+            function (event) {
+                if (event.key === "Escape") {
+                    closeAllModals();
+                }
+            }
+        );
     </script>
+
 </body>
 </html>
