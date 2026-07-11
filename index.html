@@ -5,7 +5,7 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1, viewport-fit=cover"
     >
 
     <title>Ourflix - 我們的未完待續</title>
@@ -33,6 +33,10 @@
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
             overflow-x: hidden;
             overflow-y: auto;
+        }
+
+        body.modal-open {
+            overflow: hidden;
         }
 
         button {
@@ -560,17 +564,32 @@
             justify-content: center;
             align-items: center;
 
-            padding: 20px;
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+
+            padding:
+                max(12px, env(safe-area-inset-top))
+                max(12px, env(safe-area-inset-right))
+                max(12px, env(safe-area-inset-bottom))
+                max(12px, env(safe-area-inset-left));
 
             background-color: rgba(0, 0, 0, 0.95);
+            overflow: hidden;
         }
 
+        /*
+           手機 Safari 修正：
+           影片不只依照畫面寬度，也會依照「實際可視高度」縮小，
+           所以網址列和工具列出現時，影片也不會被上下裁掉。
+        */
         .modal-video-content {
             position: relative;
 
-            width: 85%;
+            width: min(94vw, calc(82dvh * 16 / 9), 950px);
             max-width: 950px;
             aspect-ratio: 16 / 9;
+            flex: 0 0 auto;
 
             background-color: #000000;
             border-radius: 8px;
@@ -578,19 +597,26 @@
             box-shadow:
                 0 0 40px rgba(0, 0, 0, 0.6);
 
-            overflow: hidden;
+            overflow: visible;
         }
 
         .video-container {
             width: 100%;
             height: 100%;
+
+            background-color: #000000;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .video-container iframe {
+            display: block;
+
             width: 100%;
             height: 100%;
 
             border: none;
+            background-color: #000000;
         }
 
         .modal-choice-content {
@@ -672,20 +698,45 @@
 
         .close-btn {
             position: absolute;
-            top: 10px;
-            right: 18px;
+            top: -46px;
+            right: 0;
             z-index: 1101;
 
-            color: #aaaaaa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            width: 42px;
+            height: 42px;
+
+            border-radius: 50%;
+            background-color: rgba(20, 20, 20, 0.88);
+
+            color: #ffffff;
             font-size: 35px;
+            line-height: 1;
 
             cursor: pointer;
 
-            transition: color 0.2s ease;
+            transition:
+                color 0.2s ease,
+                background-color 0.2s ease;
         }
 
         .close-btn:hover {
             color: #ffffff;
+            background-color: rgba(60, 60, 60, 0.95);
+        }
+
+        .modal-choice-content .close-btn {
+            top: 10px;
+            right: 18px;
+
+            width: auto;
+            height: auto;
+
+            background-color: transparent;
+            color: #aaaaaa;
         }
 
 
@@ -793,8 +844,29 @@
                 font-size: 1.35rem;
             }
 
+            .modal-overlay {
+                padding-right: 8px;
+                padding-left: 8px;
+            }
+
             .modal-video-content {
-                width: 100%;
+                width: min(96vw, calc(78dvh * 16 / 9));
+            }
+        }
+
+        /* 手機橫向時，Safari 工具列會吃掉較多高度 */
+        @media (orientation: landscape) and (max-height: 600px) {
+            .modal-overlay {
+                padding-top: max(48px, env(safe-area-inset-top));
+                padding-bottom: max(8px, env(safe-area-inset-bottom));
+            }
+
+            .modal-video-content {
+                width: min(94vw, calc(72dvh * 16 / 9), 950px);
+            }
+
+            .close-btn {
+                top: -40px;
             }
         }
     </style>
@@ -1060,7 +1132,7 @@
                 <iframe
                     id="videoPlayer"
                     src=""
-                    allow="autoplay; encrypted-media"
+                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
                     allowfullscreen
                 ></iframe>
 
@@ -1299,7 +1371,7 @@
                         setTimeout(() => {
                             intro.style.display = "none";
                             main.style.opacity = "1";
-                            document.body.style.overflow = "auto";
+                            document.body.classList.remove("modal-open");
                         }, 600);
 
                     }, 3000);
@@ -1327,13 +1399,13 @@
         function openVideoModal(videoUrl) {
             player.src = videoUrl;
             videoModal.style.display = "flex";
-            document.body.style.overflow = "hidden";
+            document.body.classList.add("modal-open");
         }
 
 
         function openChoiceModal() {
             choiceModal.style.display = "flex";
-            document.body.style.overflow = "hidden";
+            document.body.classList.add("modal-open");
         }
 
 
@@ -1343,7 +1415,7 @@
 
             player.src = "";
 
-            document.body.style.overflow = "auto";
+            document.body.classList.remove("modal-open");
         }
 
 
