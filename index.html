@@ -1008,7 +1008,7 @@
         並命名為 at-my-worst.mp3。
     -->
     <audio id="backgroundMusic" loop preload="auto" playsinline>
-        <source src="Pink SweatAt My Worst.mp3" type="audio/mpeg">
+        <source src="at-my-worst.mp3" type="audio/mpeg">
         你的瀏覽器不支援音訊播放。
     </audio>
 
@@ -1357,19 +1357,51 @@
         const musicVolumeValue =
             document.getElementById("musicVolumeValue");
 
-        const savedMusicVolume = Number(
-            localStorage.getItem("ourflixMusicVolume")
-        );
+        /*
+           初始音量設定：0.35 = 35%
+           想改成 20% 就寫 0.20，想改成 50% 就寫 0.50。
+        */
+        const DEFAULT_MUSIC_VOLUME = 0.35;
+
+        /*
+           使用安全的 localStorage 讀寫方式：
+           無痕／私人瀏覽模式下若無舊資料，就正確使用 35%，
+           不會再把 null 誤判成 0%。
+        */
+        function safeStorageGet(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (error) {
+                return null;
+            }
+        }
+
+        function safeStorageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (error) {
+                console.log("無法儲存瀏覽器設定：", error);
+            }
+        }
+
+        const savedMusicVolumeText =
+            safeStorageGet("ourflixMusicVolume");
+
+        const savedMusicVolume =
+            savedMusicVolumeText !== null
+                ? Number(savedMusicVolumeText)
+                : null;
 
         let targetMusicVolume =
+            savedMusicVolume !== null &&
             Number.isFinite(savedMusicVolume) &&
             savedMusicVolume >= 0 &&
             savedMusicVolume <= 1
                 ? savedMusicVolume
-                : 0.35;
+                : DEFAULT_MUSIC_VOLUME;
 
         let musicEnabled =
-            localStorage.getItem("ourflixMusicEnabled") !== "false";
+            safeStorageGet("ourflixMusicEnabled") !== "false";
 
         let resumeMusicAfterVideo = false;
         let musicFadeTimer = null;
@@ -1496,7 +1528,7 @@
                 musicEnabled = false;
                 backgroundMusic.pause();
 
-                localStorage.setItem(
+                safeStorageSet(
                     "ourflixMusicEnabled",
                     "false"
                 );
@@ -1507,7 +1539,7 @@
 
             musicEnabled = true;
 
-            localStorage.setItem(
+            safeStorageSet(
                 "ourflixMusicEnabled",
                 "true"
             );
@@ -1531,7 +1563,7 @@
 
             backgroundMusic.volume = targetMusicVolume;
 
-            localStorage.setItem(
+            safeStorageSet(
                 "ourflixMusicVolume",
                 String(targetMusicVolume)
             );
