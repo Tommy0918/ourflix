@@ -272,6 +272,76 @@
             text-decoration: none;
         }
 
+        /* =========================
+           右上角背景音樂控制器
+        ========================= */
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+
+            margin-left: auto;
+            padding: 8px 12px;
+
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+
+            background-color: rgba(0, 0, 0, 0.58);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.28);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .music-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+
+            padding: 4px 6px;
+
+            border: none;
+            background: transparent;
+            color: #ffffff;
+
+            font-size: 0.9rem;
+            font-weight: 700;
+
+            cursor: pointer;
+        }
+
+        .music-toggle:hover {
+            color: #e50914;
+        }
+
+        .music-icon {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+
+            width: 20px;
+            min-width: 20px;
+            font-size: 1rem;
+        }
+
+        .volume-icon {
+            font-size: 0.95rem;
+            opacity: 0.88;
+        }
+
+        .music-volume {
+            width: 110px;
+            cursor: pointer;
+            accent-color: #e50914;
+        }
+
+        .music-volume-value {
+            min-width: 38px;
+            color: #dddddd;
+            font-size: 0.78rem;
+            text-align: right;
+        }
+
 
         /* =========================
            4. Banner 區域
@@ -788,6 +858,24 @@
                 font-size: 1.45rem;
             }
 
+            .music-controls {
+                gap: 6px;
+                padding: 7px 9px;
+            }
+
+            .music-label,
+            .music-volume-value {
+                display: none;
+            }
+
+            .music-toggle {
+                padding: 3px;
+            }
+
+            .music-volume {
+                width: 72px;
+            }
+
             .banner {
                 align-items: flex-end;
 
@@ -915,6 +1003,15 @@
 
     </div>
 
+    <!--
+        背景音樂：請把你合法取得的 MP3 檔上傳到 GitHub 專案根目錄，
+        並命名為 at-my-worst.mp3。
+    -->
+    <audio id="backgroundMusic" loop preload="auto" playsinline>
+        <source src="Pink SweatAt My Worst.mp3" type="audio/mpeg">
+        你的瀏覽器不支援音訊播放。
+    </audio>
+
 
     <!-- 主頁面 -->
     <div class="main-content" id="mainContent">
@@ -923,6 +1020,36 @@
             <a href="#" class="logo">
                 OURFLIX
             </a>
+
+            <div class="music-controls" aria-label="背景音樂控制">
+                <button
+                    type="button"
+                    class="music-toggle"
+                    id="musicToggle"
+                    onclick="toggleBackgroundMusic()"
+                    aria-pressed="false"
+                    title="播放或暫停背景音樂"
+                >
+                    <span class="music-icon" id="musicIcon">▶</span>
+                    <span class="music-label" id="musicLabel">播放音樂</span>
+                </button>
+
+                <span class="volume-icon" aria-hidden="true">🔊</span>
+
+                <input
+                    class="music-volume"
+                    id="musicVolume"
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value="0.35"
+                    oninput="setMusicVolume(this.value)"
+                    aria-label="背景音樂音量"
+                >
+
+                <span class="music-volume-value" id="musicVolumeValue">35%</span>
+            </div>
         </nav>
 
 
@@ -1209,6 +1336,244 @@
 
 
         /* =========================
+           背景音樂控制
+        ========================= */
+
+        const backgroundMusic =
+            document.getElementById("backgroundMusic");
+
+        const musicToggle =
+            document.getElementById("musicToggle");
+
+        const musicIcon =
+            document.getElementById("musicIcon");
+
+        const musicLabel =
+            document.getElementById("musicLabel");
+
+        const musicVolume =
+            document.getElementById("musicVolume");
+
+        const musicVolumeValue =
+            document.getElementById("musicVolumeValue");
+
+        const savedMusicVolume = Number(
+            localStorage.getItem("ourflixMusicVolume")
+        );
+
+        let targetMusicVolume =
+            Number.isFinite(savedMusicVolume) &&
+            savedMusicVolume >= 0 &&
+            savedMusicVolume <= 1
+                ? savedMusicVolume
+                : 0.35;
+
+        let musicEnabled =
+            localStorage.getItem("ourflixMusicEnabled") !== "false";
+
+        let resumeMusicAfterVideo = false;
+        let musicFadeTimer = null;
+
+        backgroundMusic.volume = 0;
+        musicVolume.value = String(targetMusicVolume);
+        updateMusicVolumeText();
+        updateMusicButton();
+
+
+        function updateMusicButton() {
+            const isPlaying =
+                musicEnabled &&
+                !backgroundMusic.paused;
+
+            musicIcon.textContent = isPlaying ? "❚❚" : "▶";
+            musicLabel.textContent = isPlaying ? "暫停音樂" : "播放音樂";
+            musicToggle.setAttribute(
+                "aria-pressed",
+                String(isPlaying)
+            );
+        }
+
+
+        function updateMusicVolumeText() {
+            musicVolumeValue.textContent =
+                Math.round(targetMusicVolume * 100) + "%";
+        }
+
+
+        function fadeBackgroundMusic(target, duration = 900) {
+            if (musicFadeTimer) {
+                clearInterval(musicFadeTimer);
+            }
+
+            const safeTarget = Math.max(
+                0,
+                Math.min(1, Number(target))
+            );
+
+            const startVolume = backgroundMusic.volume;
+            const steps = 30;
+            let currentStep = 0;
+
+            musicFadeTimer = setInterval(() => {
+                currentStep += 1;
+
+                const progress = currentStep / steps;
+                backgroundMusic.volume =
+                    startVolume +
+                    (safeTarget - startVolume) * progress;
+
+                if (currentStep >= steps) {
+                    clearInterval(musicFadeTimer);
+                    musicFadeTimer = null;
+                    backgroundMusic.volume = safeTarget;
+                }
+            }, duration / steps);
+        }
+
+
+        function primeBackgroundMusic() {
+            if (!musicEnabled) {
+                return;
+            }
+
+            /*
+               瀏覽器通常禁止網站直接自動播放有聲音的音樂。
+               因為這個函式是在使用者點擊頭像時執行，
+               先用靜音狀態啟動，片頭結束後再淡入音量。
+            */
+            backgroundMusic.volume = 0;
+
+            const playPromise = backgroundMusic.play();
+
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        updateMusicButton();
+                    })
+                    .catch((error) => {
+                        console.log(
+                            "瀏覽器阻擋背景音樂自動播放：",
+                            error
+                        );
+
+                        updateMusicButton();
+                    });
+            }
+        }
+
+
+        function startBackgroundMusicAfterIntro() {
+            if (!musicEnabled) {
+                updateMusicButton();
+                return;
+            }
+
+            const playPromise = backgroundMusic.play();
+
+            if (playPromise !== undefined) {
+                playPromise
+                    .then(() => {
+                        fadeBackgroundMusic(
+                            targetMusicVolume,
+                            1200
+                        );
+
+                        updateMusicButton();
+                    })
+                    .catch(() => {
+                        /*
+                           若瀏覽器仍阻擋，右上角會保留播放按鈕，
+                           使用者點一下即可播放。
+                        */
+                        updateMusicButton();
+                    });
+            }
+        }
+
+
+        async function toggleBackgroundMusic() {
+            if (!backgroundMusic.paused) {
+                musicEnabled = false;
+                backgroundMusic.pause();
+
+                localStorage.setItem(
+                    "ourflixMusicEnabled",
+                    "false"
+                );
+
+                updateMusicButton();
+                return;
+            }
+
+            musicEnabled = true;
+
+            localStorage.setItem(
+                "ourflixMusicEnabled",
+                "true"
+            );
+
+            try {
+                backgroundMusic.volume = targetMusicVolume;
+                await backgroundMusic.play();
+            } catch (error) {
+                console.log("背景音樂播放失敗：", error);
+            }
+
+            updateMusicButton();
+        }
+
+
+        function setMusicVolume(value) {
+            targetMusicVolume = Math.max(
+                0,
+                Math.min(1, Number(value))
+            );
+
+            backgroundMusic.volume = targetMusicVolume;
+
+            localStorage.setItem(
+                "ourflixMusicVolume",
+                String(targetMusicVolume)
+            );
+
+            updateMusicVolumeText();
+
+            if (
+                targetMusicVolume > 0 &&
+                musicEnabled &&
+                backgroundMusic.paused
+            ) {
+                backgroundMusic
+                    .play()
+                    .then(updateMusicButton)
+                    .catch(() => updateMusicButton());
+            }
+        }
+
+
+        backgroundMusic.addEventListener(
+            "play",
+            updateMusicButton
+        );
+
+        backgroundMusic.addEventListener(
+            "pause",
+            updateMusicButton
+        );
+
+        backgroundMusic.addEventListener(
+            "error",
+            function () {
+                console.log(
+                    "找不到背景音樂。請確認 GitHub 中有 at-my-worst.mp3。"
+                );
+
+                musicLabel.textContent = "找不到音樂";
+            }
+        );
+
+
+        /* =========================
            開場音效
         ========================= */
 
@@ -1352,6 +1717,7 @@
                 document.getElementById("mainContent");
 
             emitTudumSound();
+            primeBackgroundMusic();
 
             gate.style.opacity = "0";
 
@@ -1372,6 +1738,7 @@
                             intro.style.display = "none";
                             main.style.opacity = "1";
                             document.body.classList.remove("modal-open");
+                            startBackgroundMusicAfterIntro();
                         }, 600);
 
                     }, 3000);
@@ -1397,6 +1764,14 @@
 
 
         function openVideoModal(videoUrl) {
+            resumeMusicAfterVideo =
+                musicEnabled &&
+                !backgroundMusic.paused;
+
+            if (resumeMusicAfterVideo) {
+                backgroundMusic.pause();
+            }
+
             player.src = videoUrl;
             videoModal.style.display = "flex";
             document.body.classList.add("modal-open");
@@ -1410,12 +1785,30 @@
 
 
         function closeAllModals() {
+            const wasVideoOpen =
+                videoModal.style.display === "flex";
+
             videoModal.style.display = "none";
             choiceModal.style.display = "none";
 
             player.src = "";
 
             document.body.classList.remove("modal-open");
+
+            if (
+                wasVideoOpen &&
+                resumeMusicAfterVideo &&
+                musicEnabled
+            ) {
+                backgroundMusic.volume = targetMusicVolume;
+
+                backgroundMusic
+                    .play()
+                    .then(updateMusicButton)
+                    .catch(() => updateMusicButton());
+            }
+
+            resumeMusicAfterVideo = false;
         }
 
 
