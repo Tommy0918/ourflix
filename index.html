@@ -1605,6 +1605,152 @@
         );
 
 
+
+        /* =========================
+           Discord 瀏覽通知
+        ========================= */
+
+        const VISIT_NOTIFY_URL =
+            "https://ourflix-discord-notify.tommy890918.workers.dev";
+
+
+        function getDeviceType() {
+            const userAgent =
+                navigator.userAgent || "";
+
+            if (/iPad|Tablet/i.test(userAgent)) {
+                return "平板";
+            }
+
+            if (
+                /Android|iPhone|iPod|Mobile/i
+                    .test(userAgent)
+            ) {
+                return "手機";
+            }
+
+            return "電腦";
+        }
+
+
+        function getBrowserName() {
+            const userAgent =
+                navigator.userAgent || "";
+
+            if (/Edg/i.test(userAgent)) {
+                return "Microsoft Edge";
+            }
+
+            if (/OPR|Opera/i.test(userAgent)) {
+                return "Opera";
+            }
+
+            if (/CriOS/i.test(userAgent)) {
+                return "Google Chrome（iOS）";
+            }
+
+            if (/Chrome/i.test(userAgent)) {
+                return "Google Chrome";
+            }
+
+            if (/FxiOS/i.test(userAgent)) {
+                return "Firefox（iOS）";
+            }
+
+            if (/Firefox/i.test(userAgent)) {
+                return "Firefox";
+            }
+
+            if (/Safari/i.test(userAgent)) {
+                return "Safari";
+            }
+
+            return "其他瀏覽器";
+        }
+
+
+        async function notifyDiscordOnce(role) {
+            /*
+               同一個分頁只通知一次。
+               關閉分頁後重新進入，會再次通知。
+            */
+            const storageKey =
+                "ourflixDiscordNotified";
+
+            try {
+                if (
+                    sessionStorage.getItem(storageKey)
+                    === "1"
+                ) {
+                    return;
+                }
+            } catch (error) {
+                console.log(
+                    "無法讀取 sessionStorage：",
+                    error
+                );
+            }
+
+            const notificationData = {
+                role: role,
+                device: getDeviceType(),
+                browser: getBrowserName(),
+                page: window.location.pathname
+            };
+
+            try {
+                const response =
+                    await fetch(
+                        VISIT_NOTIFY_URL,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    notificationData
+                                )
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        "HTTP " + response.status
+                    );
+                }
+
+                try {
+                    sessionStorage.setItem(
+                        storageKey,
+                        "1"
+                    );
+                } catch (error) {
+                    console.log(
+                        "無法寫入 sessionStorage：",
+                        error
+                    );
+                }
+
+                console.log(
+                    "Discord 通知成功"
+                );
+
+            } catch (error) {
+                /*
+                   通知失敗不會影響網站正常使用。
+                */
+                console.warn(
+                    "Discord 通知失敗：",
+                    error
+                );
+            }
+        }
+
+
         /* =========================
            開場音效
         ========================= */
@@ -1749,6 +1895,10 @@
                 document.getElementById("mainContent");
 
             emitTudumSound();
+
+            // 傳送 Discord 瀏覽通知
+            notifyDiscordOnce(role);
+
             primeBackgroundMusic();
 
             gate.style.opacity = "0";
